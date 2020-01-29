@@ -1,0 +1,29 @@
+---
+
+- name: "Create VM from template"
+  vmware_guest:
+    hostname:      '{{ vcenter_ip }}'
+    username:      '{{ vcenter_user }}'
+    password:      '{{ vcenter_password }}'
+    datacenter:    '{{ vcenter_datacenter }}'
+    datastore:     '{{  vcenter_datastore }}'
+    cluster:       '{{ vcenter_cluster }}'
+    folder:        '/{{ vcenter_folder }}/{{ vm_folder }}'
+    validate_certs: no
+    template: '{{ template }}'
+    name: '{{ VMname }}'
+    hardware:
+      memory_mb: '{{ memory | default(2048) }}'
+      num_cpus:  '{{ cpu | default(2) }}'
+    guest_id: '{{ vm_type }}'
+    networks: '{{ network }}'
+    disk: '{{ disk }}'
+    state: poweredon
+    annotation: "Provisioned by ansible. User: {{ vcenter_user }} On: {{ lookup('pipe','date +%F') }}"
+    customization:
+      hostname: '{{ hostname }}'
+      domain:   '{{ domain }}'
+      dns_servers: '{{ dns }}'
+    wait_for_ip_address: yes
+  delegate_to: localhost
+  register: deploy
